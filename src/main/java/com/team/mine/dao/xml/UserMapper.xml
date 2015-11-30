@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.team.mine.dao.UserMapper">
+	<resultMap type="User" id="userMap">
+		<result column="account_id" property="accountId"/>
+		<result column="account_name" property="accountName"/>
+		<result column="password" property="password"/>
+		<result column="status" property="status" />
+		<result column="trade_password" property="tradePassword"/>
+		<result column="create_time" property="createTime" />
+		<result column="latest_login_time" property="latestLoginTime" />
+		<result column="nick_name" property="nickName" />
+		<result column="user_photo" property="userPhoto"/>
+		<result column="max_login" property="maxLogin"/>
+		<result column="vip_level" property="vipLevel"/>
+	</resultMap>
+	
+	
+	<select id="findByIdsss" resultMap="userMap">
+		select * from user_account where account_id = ${id}
+	</select>
+	
+	<select id="findByName" resultMap="userMap" parameterType="Map">
+		select * from user_account where nick_name like '%${nick_name}%'
+	</select>
+	
+	<select id="findByAccountName" resultMap="userMap" parameterType="String">
+		select * from user_account where account_name='${accountName}'
+	</select>
+	
+	<select id="findByParams" resultMap="userMap" parameterType="User">
+		select * from user_account where 1
+		<if test="account_name!=null">and account_name like '%${accountName}%'</if>
+		<if test="status!=null">and status = '%${status}%'</if>
+		<if test="nick_name!=null">and nick_name like '%${nickName}%'</if>
+		order by accountName 
+	</select>
+	
+	
+	<select id="queryUserList" resultMap="userMap" parameterType="User">
+		select * from user_account 
+		where 1
+		<if test="accountId != null">
+			and account_id = ${accountId} 
+		</if>
+		<if test="accountName != null">
+			and account_name like '%${accountName}%'
+		</if>
+		<if test="status != status">
+			and status = '${status}'
+		</if>
+		<if test="vipLevel != null">
+			and vip_level = ${vipLevel} 
+		</if>
+		<if test="startRegisterDate != null and endRegisterDate != null ">
+			and create_time between '${startRegisterDate}' and '${endRegisterDate}'   
+		</if>
+	</select>
+	
+	<update id="updateUserInfo" parameterType="User">
+		update user_account 
+		set account_name=account_name
+		<if test="null!=nickName">
+			,nick_name='${nickName}'
+		</if>
+		<if test="null!=latestLoginTime">
+			,latest_login_time='${latestLoginTime}'
+		</if>
+		<if test="null!=status">
+			,status='${status}'
+		</if>
+		<if test="null!=userPhoto">
+			,user_photo='${userPhoto}'
+		</if>
+		where account_name='${accountName}' or account_id = '${accountId}'
+	</update>
+	
+	<insert id="insertAccount" useGeneratedKeys="true" keyProperty="userId" parameterType="User">
+		insert into user_account(account_name,password,create_time,status)
+		values('${accountName}', '${password}','${createTime}','${status}')
+	</insert>
+	
+</mapper>
